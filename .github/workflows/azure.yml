@@ -3,7 +3,7 @@ name: Push to Azure Storage
 on:
   push:
     branches:
-      - main
+      - main  # Runs on push to the main branch
 
 jobs:
   upload_to_azure_storage:
@@ -11,7 +11,7 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v1
+      uses: actions/checkout@v2  # Updated to v2 for better performance
 
     - name: Set up Azure CLI
       uses: azure/CLI@v2
@@ -26,7 +26,7 @@ jobs:
         azcliversion: latest
         inlineScript: az cloud set --name AzureCloud
 
-    - name: Upload files to Azure Storage
+    - name: Upload files to Azure Storage (Overwrite Enabled)
       env:
         AZURE_STORAGE_ACCOUNT: ${{ secrets.AZURE_STORAGE_ACCOUNT }}
         AZURE_STORAGE_KEY: ${{ secrets.AZURE_STORAGE_KEY }}
@@ -37,6 +37,7 @@ jobs:
           az storage blob upload-batch \
             --account-name $AZURE_STORAGE_ACCOUNT \
             --account-key $AZURE_STORAGE_KEY \
-            --destination \$web \
+            --destination '$web' \
             --source . \
-            --pattern "*"
+            --pattern "*" \
+            --overwrite
